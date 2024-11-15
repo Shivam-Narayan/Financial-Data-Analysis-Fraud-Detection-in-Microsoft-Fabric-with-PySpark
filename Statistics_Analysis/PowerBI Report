@@ -1,0 +1,101 @@
+Here's a more technical description of the expert-level measures and charts used in the project for the **GitHub README** file:
+
+## Project Overview
+This project integrates advanced statistical analysis, fraud detection, and geo-spatial analytics to derive actionable insights from transactional and client data. The data is sourced from Kaggle and stored in Delta tables within the Microsoft Fabric environment. Using advanced DAX measures and Power BI’s visualization capabilities, this report provides insights into customer behavior, transaction trends, and fraud detection.
+
+## Page 1: Customer and Card Insights
+
+### Key Advanced Measures
+- **Net Income After Debt**:
+  This measure calculates the financial health of clients by subtracting their total debt from their total income.
+  ```DAX
+  Net_Income_After_Debt = 
+  SUM(DimClients[Yearly_Income]) - SUM(DimClients[Total_Debt])
+  ```
+
+- **Income to Debt Ratio**:
+  This advanced measure calculates the ratio of yearly income to total debt, helping gauge client financial stability and creditworthiness.
+  ```DAX
+  Income_Debt_Ratio = 
+  DIVIDE(SUM(DimClients[Yearly_Income]), SUM(DimClients[Total_Debt]), 0)
+  ```
+
+- **Credit Score Segmentation**:
+  A measure to dynamically segment clients based on their credit score, categorizing them into different tiers (Excellent, Good, Poor).
+  ```DAX
+  Credit_Score_Segment = 
+  SWITCH(TRUE(), 
+    DimClients[Credit_Score] >= 750, "Excellent", 
+    DimClients[Credit_Score] >= 650, "Good", 
+    DimClients[Credit_Score] < 650, "Poor")
+  ```
+
+- **Customer Engagement Conversion Rate**:
+  This measure calculates the conversion rate at each stage of the customer funnel, helping track client engagement and potential drop-off points.
+  ```DAX
+  Conversion_Rate = 
+  DIVIDE([Clients_Engaged], [Clients_Started], 0)
+  ```
+
+- **Net Worth Analysis (Income vs Debt)**:
+  A sophisticated measure to assess the relative health of clients by calculating their net worth based on income and debt levels.
+  ```DAX
+  Net_Worth = 
+  SUM(DimClients[Yearly_Income]) - SUM(DimClients[Total_Debt])
+  ```
+
+### Visuals
+- **Donut Chart**: Shows the distribution of income vs. debt, giving insights into customer financial health.
+- **Waterfall Chart**: Demonstrates the net income after debt segmented by customer age and credit score, helping identify trends and financial stability.
+- **Funnel Chart**: Tracks the customer engagement process from applications to active clients, identifying areas with high drop-off rates.
+- **Global Map**: Visualizes the geographic distribution of clients and transaction activities, highlighting areas with higher transaction volumes or client density.
+
+## Page 2: Transaction Analysis and Fraud Detection
+
+### Key Advanced Measures
+- **Fraudulent Transaction Count**:
+  This measure counts the number of fraudulent transactions, identifying the extent of fraud within the dataset.
+  ```DAX
+  Fraudulent_Transactions_Count = 
+  COUNTROWS(FILTER(FactTransactions, NOT(ISBLANK(FactTransactions[Errors]))))
+  ```
+
+- **Fraud Rate Calculation**:
+  The fraud rate is calculated as the percentage of fraudulent transactions relative to the total transaction count. This measure allows for in-depth fraud analysis.
+  ```DAX
+  Fraud_Rate = 
+  DIVIDE([Fraudulent_Transactions_Count], COUNTROWS(FactTransactions), 0) * 100
+  ```
+
+- **Total Fraud Amount**:
+  This measure aggregates the total monetary loss due to fraud, providing insights into the financial impact of fraudulent transactions.
+  ```DAX
+  Total_Fraud_Amount = 
+  SUMX(FILTER(FactTransactions, NOT(ISBLANK(FactTransactions[Errors]))), FactTransactions[Amount])
+  ```
+
+- **Transaction Value by Merchant**:
+  A complex DAX measure that aggregates the total value of transactions per merchant, filtered by fraud status, to evaluate fraud risk by merchant.
+  ```DAX
+  Fraudulent_Transaction_Value = 
+  SUMX(FILTER(FactTransactions, NOT(ISBLANK(FactTransactions[Errors]))), FactTransactions[Amount])
+  ```
+
+- **Monthly Transaction Volume with Fraudulent Segmentation**:
+  This measure calculates monthly transaction volumes and segments them by fraud status, providing insights into transaction trends and fraud fluctuations.
+  ```DAX
+  Monthly_Transaction_Fraud_Segmented = 
+  CALCULATE(COUNTROWS(FactTransactions), 
+    FILTER(FactTransactions, MONTH(FactTransactions[Date]) = MONTH(TODAY()) && NOT(ISBLANK(FactTransactions[Errors]))))
+  ```
+
+### Visuals
+- **Line Chart**: Displays the trends in transaction volumes and fraudulent transactions over time, allowing comparison of both metrics.
+- **Stacked Column Chart**: Shows fraud distribution by merchant, highlighting merchants with the highest number of fraudulent transactions.
+- **Donut Chart**: Compares total transaction volume with the fraud amount, visually illustrating how much fraud is impacting the transaction volume.
+- **Geo-Spatial Maps**:
+  - **Fraud Distribution Map**: Shows the geographic distribution of fraud transactions, helping identify regions with high fraud activity.
+  - **Merchant Category Map**: Visualizes spending patterns across merchant categories, providing insights into where fraud is concentrated by merchant type.
+
+## Conclusion
+This Power BI project applies advanced DAX measures and geo-spatial analytics to provide comprehensive insights into customer behavior, transaction patterns, and fraud detection. Using Delta tables within the Microsoft Fabric environment, this report is designed to offer strategic decision-making insights through dynamic and high-level analytics. By leveraging expert-level DAX formulas and Power BI’s advanced visualization capabilities, this project delivers actionable insights to detect fraud, understand customer behaviors, and track financial trends.
